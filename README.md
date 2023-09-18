@@ -1,15 +1,13 @@
-# hot-reload
+# Hot Reloading Example
 
-To install dependencies:
+A simple WebSocket server which watches a directory for changes, triggering a simple message send to the client. 
 
-```bash
-bun install
+The client has a simple event listener:
+```js
+<script type="text/javascript">
+  const ws = new WebSocket("ws://localhost:3000");
+  ws.onmessage = () => location.reload();
+</script>
 ```
 
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.0.1. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+Which will refresh the browser whenever a new message is recieved. 
