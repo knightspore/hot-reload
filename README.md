@@ -3,7 +3,7 @@
 A simple WebSocket server which watches a directory for changes, triggering a simple message send to the client. 
 
 The client has a simple event listener:
-```js
+```html
 <script type="text/javascript">
   const ws = new WebSocket("ws://localhost:3000");
   ws.onmessage = () => location.reload();
