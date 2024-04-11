@@ -2,10 +2,18 @@
   "name": "hot-reload",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "listen": "bun run index.ts",
+    "serve:example": "bun run example/example-server.ts",
+    "example": "bun run listen 2>&1 | bun run serve:example"
+  },
   "devDependencies": {
     "bun-types": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0"
   }
 }
