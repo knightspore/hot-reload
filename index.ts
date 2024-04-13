@@ -1,53 +1,16 @@
 import { Server, ServerWebSocket } from "bun";
-import chalk from "chalk";
-import { watch } from "fs";
+import { reqLog, wssLog } from "./log";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || "3000";
 const WATCH_PATH = process.env.WATCH_PATH || "./example";
 
-function log(message: string) {
-    const time = new Date().toLocaleTimeString();
-    process.stdout.write(`[${chalk.dim(time)}] ${message}`);
-}
-function tagLog(tag: string, message: string) {
-    log(`<${chalk.bold(tag)}> ${message}\n`);
-}
-
-function wssLog(message: string) {
-    tagLog(chalk.blue("WSS"), message);
-}
-
-function reqLog(message: string) {
-    tagLog(chalk.green("Req"), message);
-}
-
-function hotLog(message: string) {
-    tagLog(chalk.red("Hot"), message);
-}
-
 async function handleMessage(ws: ServerWebSocket, message: string | Buffer) {
-    log(`Received message: ${message}\n`);
+    wssLog(`Message: ${message}`);
+    ws.send(message);
 }
 
-async function handleOpen(ws: ServerWebSocket) {
-    wssLog("Connection opened");
-    const watcher = watch(WATCH_PATH, {
-        recursive: true,
-    })
-    let lastEvent = Date.now();
-    watcher.on("change", (eventType, filename: string) => {
-        const isTempFile = filename.endsWith("~");
-        const isTempVimFile = filename.match(/[0-9]/)
-        if (isTempFile || isTempVimFile) return;
-        lastEvent = Date.now();
-        hotLog(`Detected change in '${filename}' (${eventType})`);
-        ws.send("");
-    })
-    hotLog(`Watching for changes in ${WATCH_PATH}/*`)
-    process.on("SIGINT", () => {
-        watcher.close()
-        process.exit(0);
-    })
+async function handleOpen() {
+    wssLog(`Connection opened`);
 }
 
 const listenerScript = `const ws = new WebSocket("ws://localhost:${PORT}");
@@ -91,13 +54,21 @@ const serverConfig = {
     websocket: {
         message: handleMessage,
         open: handleOpen,
-        close: (ws: ServerWebSocket) => {
-            wssLog("Connection closed");
-            // Kill the watcher
-        }
     }
 }
 
 Bun.serve(serverConfig)
+
 wssLog(`Listening on http://localhost:${PORT}`);
+
+const watcher = Bun.spawn(["bun", "run", "watcher.ts"], {
+    stdout: "inherit",
+    stderr: "inherit",
+    env: {
+        WATCH_PATH,
+        PORT,
+    }
+})
+
+wssLog(`Spawned watcher with PID: ${watcher.pid}`)
 
