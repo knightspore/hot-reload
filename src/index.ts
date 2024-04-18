@@ -61,7 +61,7 @@ Bun.serve(serverConfig)
 
 wssLog(`Listening on http://localhost:${PORT}`);
 
-const watcher = Bun.spawn(["bun", "run", "watcher.ts"], {
+const watcher = Bun.spawn(["bun", "run", `${import.meta.dir}/watcher.ts`], {
     stdout: "inherit",
     stderr: "inherit",
     env: {

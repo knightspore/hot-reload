@@ -3,7 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "listen": "bun run index.ts",
+    "listen": "bun run src/index.ts",
     "serve:example": "bun run example/example-server.ts",
     "example": "bun run listen 2>&1 | bun run serve:example"
   },
