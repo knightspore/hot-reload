@@ -67,8 +67,9 @@ const watcher = Bun.spawn(["bun", "run", `${import.meta.dir}/watcher.ts`], {
     env: {
         WATCH_PATH,
         PORT,
+        FORCE_COLOR: 'true',
     }
 })
 
-wssLog(`Spawned watcher with PID: ${watcher.pid}`)
+wssLog(`Spawned file watcher (PID ${watcher.pid})`)
 
